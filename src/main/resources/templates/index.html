@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Index page</title>
+</head>
+<body>
+	<p>Workbench</p>
+	
+	<form action="/action_page.php">
+		<label for="orgId">Organization Id:</label><br/>
+		<input type="text" id="orgId" name="orgId" required><br/>
+		<label for="baseUrl">Salesforce base URL:</label><br/>
+		<input type="url" id="baseUrl" name="baseUrl" required><br/>
+		<label for="sessionId">Session Id:</label><br/>
+		<input type="text" id="sessionId" name="sessionId" required><br/>
+		<label for="apiVersion">API Version:</label>
+		<input type="number" id="apiVersion" name="apiVersion" value="50" min="1" required><br/><br/>
+		<input type="button" value="Submit" onclick="connect()"><input type="reset">
+	</form>
+	<br/><br/>
+	<div id="showTypes"></div>
+	
+    <script type="text/javascript" src="https://code.jquery.com/jquery-git.min.js"></script>
+    <script type="text/javascript" src="js/main.js" ></script>
+</body>
+</html>

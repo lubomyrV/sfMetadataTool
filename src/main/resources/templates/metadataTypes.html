@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	
+	<label for="typeName">Choose a type:</label>
+	<select name="typeName" id="typeName">
+	  <option value=""></option>
+	  <th:block th:each="type:${allTypes}">
+	  		<option th:value="${type}" th:text="${type}"></option>
+      </th:block>
+	</select> 
+	
+</body>
+</html>
