@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Index page</title>
 	<style>
+		/* ====================Table============================ */
+		
 		table {
 		  font-family: arial, sans-serif;
 		  border-collapse: collapse;
@@ -19,6 +21,8 @@
 		tr:nth-child(even) {
 		  background-color: #dcdcdc;
 		}
+		
+		/* ======================Layout=========================== */
 		
 		* {
 		  box-sizing: border-box;
@@ -77,6 +81,46 @@
 		    width: 100%;
 		  }
 		}
+		
+		/* =================Tree View======================= */
+		
+		ul, #myUL {
+		  list-style-type: none;
+		}
+		
+		#myUL {
+		  margin: 0;
+		  padding: 0;
+		}
+		
+		.caret {
+		  cursor: pointer;
+		  -webkit-user-select: none; /* Safari 3.1+ */
+		  -moz-user-select: none; /* Firefox 2+ */
+		  -ms-user-select: none; /* IE 10+ */
+		  user-select: none;
+		}
+		
+		.caret::before {
+		  content: "\25B6";
+		  color: black;
+		  display: inline-block;
+		  margin-right: 6px;
+		}
+		
+		.caret-down::before {
+		  -ms-transform: rotate(90deg); /* IE 9 */
+		  -webkit-transform: rotate(90deg); /* Safari */
+		  transform: rotate(90deg);  
+		}
+		
+		.nested {
+		  display: none;
+		}
+		
+		.active {
+		  display: block;
+		}
 	</style>
 </head>
 <body>	
@@ -116,11 +160,49 @@
 	  
 	  <div class="column">
 	    <h2>Column 3</h2>
-	    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit amet pretium urna. Vivamus venenatis velit nec neque ultricies, eget elementum magna tristique. Quisque vehicula, risus eget aliquam placerat, purus leo tincidunt eros, eget luctus quam orci in velit. Praesent scelerisque tortor sed accumsan convallis.</p>
+	    
+	    <h2>Tree View</h2>
+		<p>A tree view represents a hierarchical view of information, where each item can have a number of subitems.</p>
+		<p>Click on the arrow(s) to open or close the tree branches.</p>
+		
+		<ul id="myUL">
+		  <li><span class="caret">package.xml</span>
+		    <ul class="nested">
+		      <li>CustomObject</li>
+		      <li>ApexClass</li>
+		      <li><span class="caret">CustomField</span>
+		        <ul class="nested">
+		          <li>Case</li>
+		          <li>Contact</li>
+		          <li><span class="caret">Account</span>
+		            <ul class="nested">
+		              <li>Phone</li>
+		              <li>Custom_Field__c</li>
+		              <li>Name</li>
+		              <li>Is_Active__c</li>
+		            </ul>
+		          </li>
+		        </ul>
+		      </li>  
+		    </ul>
+		  </li>
+		</ul>
+	    
 	  </div>
 	</div>
 	
     <script type="text/javascript" src="https://code.jquery.com/jquery-git.min.js"></script>
     <script type="text/javascript" src="js/main.js" ></script>
+    
+    <script>
+		let toggler = document.getElementsByClassName("caret");		
+		for (let i = 0; i < toggler.length; i++) {
+		  toggler[i].addEventListener("click", function() {
+		    this.parentElement.querySelector(".nested").classList.toggle("active");
+		    this.classList.toggle("caret-down");
+		  });
+		}
+	</script>
+    
 </body>
 </html>

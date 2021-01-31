@@ -28,7 +28,6 @@ function connect(){
 	           	selectOptions += '<label for="typeName">Choose a type:</label>';
 				selectOptions += '<select name="typeName" id="typeName" onchange="selectedType()">';
 				selectOptions += '<option value=""></option>';
-				$().appendTo("#showTypes");
 				for (let i = 0; i < metadataTypes.length; i++) {
 					selectOptions += '<option value="'+metadataTypes[i]+'">'+metadataTypes[i]+'</option>';
 				}
@@ -82,7 +81,6 @@ function getQueuedResult(queuedId){
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
 	data["queuedId"] = queuedId;
-	console.log("getQueuedResult=start");
 
 	$.ajax({
     	type : "POST",
@@ -130,7 +128,7 @@ function getQueuedResult(queuedId){
 			} else {
 
 			}
-			console.log("getQueuedResult=finish");
+			console.log(new Date());
 		},
 		error : function(e) {
 			console.error("ERROR: ", e);

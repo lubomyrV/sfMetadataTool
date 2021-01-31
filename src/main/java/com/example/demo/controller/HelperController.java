@@ -22,7 +22,7 @@ import java.util.TreeSet;
 @RestController
 public class HelperController {
 	
-	static int pause = 1000;
+	static int pause = 500;
 	
 	@PostMapping("/getQueuedData")
     public String retrieveResponseById (@RequestBody String data) {
@@ -112,10 +112,12 @@ public class HelperController {
 
 		if (!xmlNameTypes.isEmpty()) {
 			String metadataTypesData = readFile("metadataTypes.txt");
-			String [] mtypesArr = metadataTypesData.split(";");
-			for (int i = 0; i < mtypesArr.length; i++) {
-				xmlNameTypes.add(mtypesArr[i]);
-			}			
+			if (!metadataTypesData.isBlank()) {
+				String [] mtypesArr = metadataTypesData.split(";");
+				for (int i = 0; i < mtypesArr.length; i++) {
+					xmlNameTypes.add(mtypesArr[i]);
+				}				
+			}
 		}
 		
 		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
