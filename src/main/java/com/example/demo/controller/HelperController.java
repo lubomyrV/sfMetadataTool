@@ -26,13 +26,11 @@ public class HelperController {
 	
 	@PostMapping("/getQueuedData")
     public String retrieveResponseById (@RequestBody String data) {
-		System.out.println("pause="+pause);
 		try{
 		    Thread.sleep(pause);
 		}catch(InterruptedException ex){
 		    Thread.currentThread().interrupt();
 		}
-		pause += 1000;
 		JSONObject obj = new JSONObject(data);
 		String sessionId = obj.getString("sessionId");
 		String queuedId = obj.getString("queuedId");

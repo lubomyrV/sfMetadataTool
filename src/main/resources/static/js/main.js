@@ -24,8 +24,6 @@ function connect(){
             $("#showTypes").empty();
             
 			if (metadataTypes.length > 0){
-				$('<p>Connected</p>').appendTo("#showTypes");
-
 	           	let selectOptions = '';
 	           	selectOptions += '<label for="typeName">Choose a type:</label>';
 				selectOptions += '<select name="typeName" id="typeName" onchange="selectedType()">';
@@ -100,9 +98,37 @@ function getQueuedResult(queuedId){
 				if (queuedObj.hasOwnProperty("success") && !queuedObj.success){
 				  	let jobId = localStorage.getItem("queuedId");
 					getQueuedResult(jobId);
+				} else {
+					
+					console.log("done");
+					if (queuedObj.hasOwnProperty("fileProperties")){
+						let typeComponents = queuedObj.fileProperties;
+			            $("#showItems").empty();
+						let metadataType = $("#typeName").val();
+			           	let components = '<form">';
+						components += '<input type="submit" value="Add to list"><br/><br/>';
+						components += '<table>';
+						components += '<tr>';
+							components += '<th>Name</th>';
+							components += '<th>Select</th>';
+						components += '</tr>';						
+						for (let i = 0; i < typeComponents.length; i++) {
+							let component = typeComponents[i];
+							if (component.type === metadataType){
+								components += '<tr>';	
+									components += '<td><label for="'+component.fullName+'"> '+component.fullName+'</label></td>';
+									components += '<td><input type="checkbox" id="'+component.fullName+'" name="'+component.fullName+'" value="'+component.fullName+'"></td>';
+								components += '</tr>';								
+							}
+						}
+						components += '</table><br/>';
+						components += '<input type="submit" value="Add to list">';
+						components += '</form">';
+			            $(components).appendTo("#showItems");
+					}
 				}
 			} else {
-				console.log(queuedResult);
+
 			}
 			console.log("getQueuedResult=finish");
 		},
