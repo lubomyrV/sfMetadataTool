@@ -5,16 +5,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,12 +22,12 @@ import java.util.TreeSet;
 @RestController
 public class HelperController {
 	
-	static int pause = 500;
+	static final int PAUSE = 250; // milliseconds
 	
 	@PostMapping("/getQueuedData")
     public String retrieveResponseById (@RequestBody String data) {
 		try{
-		    Thread.sleep(pause);
+		    Thread.sleep(PAUSE);
 		}catch(InterruptedException ex){
 		    Thread.currentThread().interrupt();
 		}
@@ -40,20 +40,28 @@ public class HelperController {
 
 		
 		String xmlfile = readFile("retrieveResponse.xml");
+		
 		xmlfile = xmlfile.replace("queuedIdVar", queuedId);
-		xmlfile = xmlfile.replace("sessionIdVar", sessionId);			
+		xmlfile = xmlfile.replace("sessionIdVar", sessionId);	
 		
-		String responce =  "";
+		HttpResponse<String> response = null;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
 		try {
-			responce = sendPost(sessionId, orgId, baseUrl, apiVersion, xmlfile, MetadataApi.checkRetrieveStatus);
+			response = sendPost(sessionId, orgId, baseUrl, apiVersion, xmlfile, MetadataApi.checkRetrieveStatus);
 		} catch (Exception e) {
-			System.out.println("An error occurred in the sendPost() method");		
-			e.printStackTrace();
+			System.err.println("getQueuedData - An error occurred in the sendPost() method");
+			//e.printStackTrace();
+			resultMap.put("Exception", e.getMessage());
 		}
-		
-		Set<String> xmlNameTypes = parseXmlResponse(responce);
+		resultMap.put("statusCode", response.statusCode());
+		Set<String> xmlNameTypes = new HashSet<String>();
+		if	(response != null){
+			xmlNameTypes.addAll(parseXmlResponse(response.body()));			
+		}
 		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
-		return jarray.toString();
+		resultMap.put("Response", jarray);
+		return new JSONObject(resultMap).toString();
 	}
 	
 	@PostMapping("/getMetadataByType")
@@ -62,28 +70,34 @@ public class HelperController {
 		String sessionId = obj.getString("sessionId");
 		String orgId = obj.getString("orgId");
 		String baseUrl = obj.getString("baseUrl");
-		float apiVersion = obj.getFloat("apiVersion");
+		float apiVersion = Float.valueOf(obj.getString("apiVersion"));
 		String typeName = obj.getString("typeName");
 		
 		String xmlfile = readFile("retrieveRequest.xml");
+		
 		xmlfile = xmlfile.replace("typeNameVar", typeName);
 		xmlfile = xmlfile.replace("sessionIdVar", sessionId);			
 		xmlfile = xmlfile.replace("apiVersionVar", String.valueOf(apiVersion));
 		
-		String responce =  "";
+		HttpResponse<String> response = null;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
 		try {
-			responce = sendPost(sessionId, orgId, baseUrl, apiVersion, xmlfile, MetadataApi.retrieveRequest);
+			response = sendPost(sessionId, orgId, baseUrl, apiVersion, xmlfile, MetadataApi.retrieveRequest);
 		} catch (Exception e) {
-			System.out.println("An error occurred in the sendPost() method");		
-			e.printStackTrace();
+			System.err.println("getMetadataByType - An error occurred in the sendPost() method");		
+			//e.printStackTrace();
+			resultMap.put("Exception", e.getMessage());
 		}
 		
-		Set<String> xmlNameTypes = parseXmlResponse(responce);
-		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
-		if (jarray.length() > 0) {
-			return jarray.get(0).toString();
+		resultMap.put("statusCode", response.statusCode());
+		Set<String> xmlNameTypes = new HashSet<String>();
+		if	(response != null){
+			xmlNameTypes.addAll(parseXmlResponse(response.body()));			
 		}
-		return jarray.toString();
+		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
+		resultMap.put("Response", jarray);
+		return new JSONObject(resultMap).toString();
 	}
 	
 	@PostMapping("/getConnection")
@@ -93,35 +107,43 @@ public class HelperController {
 		String sessionId = obj.getString("sessionId");
 		String orgId = obj.getString("orgId");
 		String baseUrl = obj.getString("baseUrl");
-		float apiVersion = obj.getFloat("apiVersion");
+		float apiVersion = Float.valueOf(obj.getString("apiVersion"));
 		
 		String xmlfile = readFile("describeMetadata.xml");
 		
 		xmlfile = xmlfile.replace("sessionIdVar", sessionId);			
 		xmlfile = xmlfile.replace("apiVersionVar", String.valueOf(apiVersion));
 		
-		String responce =  "";
+		HttpResponse<String> response = null;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
 		try {
-			responce = sendPost(sessionId, orgId, baseUrl, apiVersion, xmlfile, MetadataApi.retrieveRequest);
+			response = sendPost(sessionId, orgId, baseUrl, apiVersion, xmlfile, MetadataApi.retrieveRequest);
 		} catch (Exception e) {
-			System.out.println("An error occurred in the sendPost() method");		
-			e.printStackTrace();
+			System.err.println("getConnection - An error occurred in the sendPost() method");		
+			//e.printStackTrace();
+			resultMap.put("Exception", e.getMessage());
 		}
 		
-		Set<String> xmlNameTypes = parseXmlResponse(responce);
-
+		
+		resultMap.put("statusCode", response.statusCode());
+		Set<String> xmlNameTypes = new HashSet<String>();
+		if	(response != null){
+			xmlNameTypes.addAll(parseXmlResponse(response.body()));			
+		}
+		
 		if (!xmlNameTypes.isEmpty()) {
 			String metadataTypesData = readFile("metadataTypes.txt");
 			if (!metadataTypesData.isBlank()) {
-				String [] mtypesArr = metadataTypesData.split(";");
+				String [] mtypesArr = metadataTypesData.split(",");
 				for (int i = 0; i < mtypesArr.length; i++) {
 					xmlNameTypes.add(mtypesArr[i]);
 				}				
 			}
 		}
-		
 		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
-		return jarray.toString();
+		resultMap.put("Response", jarray);
+		return new JSONObject(resultMap).toString();
     }
 	
 	private Set<String> parseXmlResponse(String xmlResponse){
@@ -129,21 +151,21 @@ public class HelperController {
 		int PRETTY_PRINT_INDENT_FACTOR = 4;
 		String jsonPrettyPrintString = "";
 		JSONObject xmlJSONObj = null;
-		try {
-			xmlJSONObj = XML.toJSONObject(xmlResponse);
-            jsonPrettyPrintString = xmlJSONObj.toString(PRETTY_PRINT_INDENT_FACTOR);
-        } catch (JSONException je) {
-        	System.out.println("An error occurred with parsing XML to JSON");
-            System.out.println(je.toString());
-        }
+		
+		xmlJSONObj = XML.toJSONObject(xmlResponse);
+		System.out.println(xmlJSONObj);
+        jsonPrettyPrintString = xmlJSONObj.toString(PRETTY_PRINT_INDENT_FACTOR);
+
 		System.out.println(xmlJSONObj);
 		for (String keyEnvelope : xmlJSONObj.keySet()) {
             JSONObject xmlJSONObj2 = (JSONObject) xmlJSONObj.get(keyEnvelope);
             for (String keyBody : xmlJSONObj2.keySet()) {
             	if (keyBody.equalsIgnoreCase("soapenv:Body")) {
             		JSONObject xmlJSONObj3 = (JSONObject) xmlJSONObj2.get("soapenv:Body");
+            		System.out.println(xmlJSONObj3);
                 	if (xmlJSONObj3.has("soapenv:Fault")) {
-                		xmlNameTypes.add(String.valueOf(xmlJSONObj3.get("soapenv:Fault")));
+                		JSONObject faultObj = (JSONObject) xmlJSONObj3.get("soapenv:Fault");
+                		xmlNameTypes.add(faultObj.getString("faultstring"));
                 	} else {
                 		for (String key : xmlJSONObj3.keySet()) {
                 			JSONObject xmlJSONObj4 = (JSONObject) xmlJSONObj3.get(key);
@@ -182,18 +204,19 @@ public class HelperController {
 	        data.append(myReader.nextLine());
 	      }
 	    } catch (FileNotFoundException e) {
-	      System.out.println("An error occurred in the readFile() method");
-	      e.printStackTrace();
+	      System.err.println("readFile - An error occurred in the readFile() method");
+	      return e.getMessage();
+	      //e.printStackTrace();
 	    } finally {
 		     myReader.close();
 		}
 		return data.toString();
 	}
 	
-	private String sendPost(String sessionId, String orgId, String baseUrl, double apiVersion, String xmlfile, MetadataApi retrieveType) throws Exception {
+	private HttpResponse<String> sendPost(String sessionId, String orgId, String baseUrl, double apiVersion, String xmlfile, MetadataApi retrieveType) throws Exception {
         String uri = baseUrl+"/services/Soap/m/"+apiVersion+"/"+orgId;
-        System.out.println("xmlfile="+xmlfile);
-        System.out.println("retrieveType="+retrieveType+";uri="+uri);
+        //System.out.println("xmlfile="+xmlfile);
+        //System.out.println("retrieveType="+retrieveType+";uri="+uri);
 		HttpRequest request = HttpRequest.newBuilder()
         		.POST(HttpRequest.BodyPublishers.ofString(xmlfile))
         		.uri(URI.create(uri))
@@ -204,9 +227,9 @@ public class HelperController {
         HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
 		HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("statusCode: "+response.statusCode());
-        System.out.println("body: "+response.body());
-        return response.body();
+        //System.out.println("statusCode: "+response.statusCode());
+        //System.out.println("body: "+response.body());
+        return response;
     }
 	
 	private enum MetadataApi {
