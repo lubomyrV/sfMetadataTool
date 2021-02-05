@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -22,7 +23,7 @@ import java.util.TreeSet;
 @RestController
 public class HelperController {
 	
-	static final int PAUSE = 250; // milliseconds
+	static final int PAUSE = 500; // milliseconds
 	
 	@PostMapping("/getQueuedData")
     public String retrieveResponseById (@RequestBody String data) {
@@ -37,6 +38,7 @@ public class HelperController {
 		String orgId = obj.getString("orgId");
 		String baseUrl = obj.getString("baseUrl");
 		double apiVersion = obj.getDouble("apiVersion");
+		String typeName = obj.getString("typeName");
 
 		
 		String xmlfile = readFile("retrieveResponse.xml");
@@ -59,8 +61,44 @@ public class HelperController {
 		if	(response != null){
 			xmlNameTypes.addAll(parseXmlResponse(response.body()));			
 		}
+		
+		
+		Set<String> standardObjects = new HashSet<String>();
+		if (typeName.equalsIgnoreCase("customobject") && xmlNameTypes.size() > 0) {
+			JSONObject jobj = null;
+			for (Iterator iterator = xmlNameTypes.iterator(); iterator.hasNext();) {
+				String rawjson = (String) iterator.next();
+				jobj = new JSONObject(rawjson);
+				break;
+			}
+			
+			
+			if (jobj != null && jobj.has("success") && (boolean)jobj.get("success")) {
+				System.out.println("jobj "+jobj);
+				System.out.println("success "+jobj.has("success"));
+				String standardObjectsStr = readFile("standardObjects.txt");
+				String [] standardObjectsArray = standardObjectsStr.split(",");
+				for (int i = 0; i < standardObjectsArray.length; i++) {
+					String standardObject = standardObjectsArray[i];
+					standardObjects.add(standardObject);
+				}
+			}
+		}
+		System.out.println("standardObjects "+standardObjects);
+
 		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
+		if (standardObjects.size() > 0) {
+			try {
+				JSONArray stdObjects = new JSONArray(standardObjects.toString());				
+				System.out.println(stdObjects);
+				resultMap.put("standardObjects", stdObjects);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
 		resultMap.put("Response", jarray);
+		System.out.println("resultMap "+resultMap);
+
 		return new JSONObject(resultMap).toString();
 	}
 	
@@ -72,6 +110,7 @@ public class HelperController {
 		String baseUrl = obj.getString("baseUrl");
 		float apiVersion = Float.valueOf(obj.getString("apiVersion"));
 		String typeName = obj.getString("typeName");
+		System.out.println("typeName = "+typeName);
 		
 		String xmlfile = readFile("retrieveRequest.xml");
 		
@@ -95,6 +134,7 @@ public class HelperController {
 		if	(response != null){
 			xmlNameTypes.addAll(parseXmlResponse(response.body()));			
 		}
+		
 		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
 		resultMap.put("Response", jarray);
 		return new JSONObject(resultMap).toString();
@@ -134,6 +174,7 @@ public class HelperController {
 		
 		if (!xmlNameTypes.isEmpty()) {
 			String metadataTypesData = readFile("metadataTypes.txt");
+			System.out.println("metadataTypesData: "+metadataTypesData);
 			if (!metadataTypesData.isBlank()) {
 				String [] mtypesArr = metadataTypesData.split(",");
 				for (int i = 0; i < mtypesArr.length; i++) {
@@ -153,23 +194,23 @@ public class HelperController {
 		JSONObject xmlJSONObj = null;
 		
 		xmlJSONObj = XML.toJSONObject(xmlResponse);
-		System.out.println(xmlJSONObj);
+		//System.out.println(xmlJSONObj);
         jsonPrettyPrintString = xmlJSONObj.toString(PRETTY_PRINT_INDENT_FACTOR);
 
-		System.out.println(xmlJSONObj);
+		//System.out.println(xmlJSONObj);
 		for (String keyEnvelope : xmlJSONObj.keySet()) {
             JSONObject xmlJSONObj2 = (JSONObject) xmlJSONObj.get(keyEnvelope);
             for (String keyBody : xmlJSONObj2.keySet()) {
             	if (keyBody.equalsIgnoreCase("soapenv:Body")) {
             		JSONObject xmlJSONObj3 = (JSONObject) xmlJSONObj2.get("soapenv:Body");
-            		System.out.println(xmlJSONObj3);
+            		//System.out.println(xmlJSONObj3);
                 	if (xmlJSONObj3.has("soapenv:Fault")) {
                 		JSONObject faultObj = (JSONObject) xmlJSONObj3.get("soapenv:Fault");
                 		xmlNameTypes.add(faultObj.getString("faultstring"));
                 	} else {
                 		for (String key : xmlJSONObj3.keySet()) {
                 			JSONObject xmlJSONObj4 = (JSONObject) xmlJSONObj3.get(key);
-	                    	System.out.println(xmlJSONObj4);
+	                    	//System.out.println(xmlJSONObj4);
     	                    if (xmlJSONObj4.has("result")) {
     	                    	JSONObject xmlJSONObj5 = (JSONObject) xmlJSONObj4.get("result");
     	                    	if (xmlJSONObj5.has("metadataObjects")) {
@@ -235,7 +276,8 @@ public class HelperController {
 	private enum MetadataApi {
 		retrieveRequest,
 		retrieveResponse,
-		checkRetrieveStatus
+		checkRetrieveStatus,
+		readMetadata
 	}
 
 }

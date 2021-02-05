@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:met="http://soap.sforce.com/2006/04/metadata">
+<soapenv:Header>
+	  <met:SessionHeader>
+		 <met:sessionId>0D1r000002BqvD!AR8AQKBtXxOz9Ve_2GdEaYho.ZJE_pExz42FCOyrFODfVGVWpPc726M0d_ZeLue8eUed8ii7wek_Zal53W0Dr2i3InscvcK.</met:sessionId>
+	  </met:SessionHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+		<checkRetrieveStatus>
+			<id>queuedIdVar</id>
+			<includeZip>false</includeZip>
+		</checkRetrieveStatus>
+   </soapenv:Body>
+</soapenv:Envelope>

@@ -5,7 +5,7 @@ $(document).ready(function () {
 
 function connect(){
 	$("#showTypes").empty();
-	$('<p>Conecting...</p>').appendTo("#showTypes");
+	$('<p>Connecting...</p>').appendTo("#showTypes");
 
     let data = {}
     data["orgId"] = $("#orgId").val();
@@ -73,7 +73,8 @@ function selectedType(){
 			let jResult = JSON.parse(result);
 			
 			if (jResult.statusCode != 200){
-				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showTypes")
+				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showTypes");
+				console.log(new Date());
 			} else {
 				let retrieveResult = JSON.parse(jResult.Response[0]);
 				//console.log(retrieveResult);
@@ -99,6 +100,7 @@ function getQueuedResult(queuedId){
     data["baseUrl"] = $("#baseUrl").val();
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
+	data["typeName"] = $("#typeName").val();
 	data["queuedId"] = queuedId;
 
 	$.ajax({
@@ -117,6 +119,8 @@ function getQueuedResult(queuedId){
 				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showTypes");
 			} else {
 				let queuedResult = jResult.Response;
+				console.log(jResult);
+
 				if (queuedResult.length == 1){
 					let queuedObj = JSON.parse(queuedResult[0]);
 					//console.log(queuedObj);
