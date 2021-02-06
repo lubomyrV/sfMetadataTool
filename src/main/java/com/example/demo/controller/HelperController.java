@@ -83,8 +83,8 @@ public class HelperController {
 					standardObjects.add(standardObject);
 				}
 			}
+			System.out.println(typeName+" standardObjects "+standardObjects);
 		}
-		System.out.println("standardObjects "+standardObjects);
 
 		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
 		if (standardObjects.size() > 0) {
@@ -99,6 +99,43 @@ public class HelperController {
 		resultMap.put("Response", jarray);
 		System.out.println("resultMap "+resultMap);
 
+		return new JSONObject(resultMap).toString();
+	}
+	
+	@PostMapping("/getFieldsByObject")
+    public String getFieldsByObject (@RequestBody String data) {
+		JSONObject obj = new JSONObject(data);
+		String sessionId = obj.getString("sessionId");
+		String orgId = obj.getString("orgId");
+		String baseUrl = obj.getString("baseUrl");
+		float apiVersion = Float.valueOf(obj.getString("apiVersion"));
+		String objectName = obj.getString("objectName");
+		System.out.println("objectName = "+objectName);
+		
+		String xmlfile = readFile("readMetadata.xml");
+		
+		xmlfile = xmlfile.replace("sessionIdVar", sessionId);			
+		xmlfile = xmlfile.replace("objectNameVar", objectName);
+		
+		HttpResponse<String> response = null;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		try {
+			response = sendPost(sessionId, orgId, baseUrl, apiVersion, xmlfile, MetadataApi.readMetadata);
+		} catch (Exception e) {
+			System.err.println("getMetadataByType - An error occurred in the sendPost() method");		
+			//e.printStackTrace();
+			resultMap.put("Exception", e.getMessage());
+		}
+		
+		resultMap.put("statusCode", response.statusCode());
+		Set<String> xmlNameTypes = new HashSet<String>();
+		if	(response != null){
+			xmlNameTypes.addAll(parseXmlResponse(response.body()));			
+		}
+		
+		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
+		resultMap.put("Response", jarray);
 		return new JSONObject(resultMap).toString();
 	}
 	
@@ -197,20 +234,20 @@ public class HelperController {
 		//System.out.println(xmlJSONObj);
         jsonPrettyPrintString = xmlJSONObj.toString(PRETTY_PRINT_INDENT_FACTOR);
 
-		//System.out.println(xmlJSONObj);
+		System.out.println(xmlJSONObj);
 		for (String keyEnvelope : xmlJSONObj.keySet()) {
             JSONObject xmlJSONObj2 = (JSONObject) xmlJSONObj.get(keyEnvelope);
             for (String keyBody : xmlJSONObj2.keySet()) {
             	if (keyBody.equalsIgnoreCase("soapenv:Body")) {
             		JSONObject xmlJSONObj3 = (JSONObject) xmlJSONObj2.get("soapenv:Body");
-            		//System.out.println(xmlJSONObj3);
+            		System.out.println(xmlJSONObj3);
                 	if (xmlJSONObj3.has("soapenv:Fault")) {
                 		JSONObject faultObj = (JSONObject) xmlJSONObj3.get("soapenv:Fault");
                 		xmlNameTypes.add(faultObj.getString("faultstring"));
                 	} else {
                 		for (String key : xmlJSONObj3.keySet()) {
                 			JSONObject xmlJSONObj4 = (JSONObject) xmlJSONObj3.get(key);
-	                    	//System.out.println(xmlJSONObj4);
+	                    	System.out.println(xmlJSONObj4);
     	                    if (xmlJSONObj4.has("result")) {
     	                    	JSONObject xmlJSONObj5 = (JSONObject) xmlJSONObj4.get("result");
     	                    	if (xmlJSONObj5.has("metadataObjects")) {
@@ -223,6 +260,17 @@ public class HelperController {
 									}
     	                    	} else if (xmlJSONObj5.has("id")){
         	                    	xmlNameTypes.add(xmlJSONObj5.toString());
+    	                    	} else if (xmlJSONObj5.has("records")) {
+    	                    		JSONObject records = (JSONObject)xmlJSONObj5.get("records");
+    	                    		if (records.has("fields")) {
+        	                    		JSONArray fields = (JSONArray) records.get("fields");
+        	                    		for (int i = 0; i < fields.length(); i++) {
+        	                    			JSONObject field = fields.getJSONObject(i);
+        	        	                    if (field.has("fullName")) {
+        	        	                    	xmlNameTypes.add(field.getString("fullName"));    	        	                    	
+        	        	                    }
+    									}
+    	                    		}
     	                    	}
     	                    }
     	    			}

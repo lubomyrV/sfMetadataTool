@@ -59,8 +59,12 @@ function selectedType(){
     data["baseUrl"] = $("#baseUrl").val();
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
-	data["typeName"] = $("#typeName").val();
-    //console.log("selectedType="+JSON.stringify(data));
+	let metadataType = $("#typeName").val();
+	if (metadataType === "CustomField"){
+		metadataType = "CustomObject";
+	}
+	data["typeName"] = metadataType;
+    console.log("selectedType="+JSON.stringify(data));
 
 	$.ajax({
     	type : "POST",
@@ -100,7 +104,12 @@ function getQueuedResult(queuedId){
     data["baseUrl"] = $("#baseUrl").val();
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
-	data["typeName"] = $("#typeName").val();
+	let metadataType = $("#typeName").val();
+
+	if (metadataType === "CustomField"){
+		metadataType = "CustomObject";
+	}
+	data["typeName"] = metadataType;
 	data["queuedId"] = queuedId;
 
 	$.ajax({
@@ -135,6 +144,7 @@ function getQueuedResult(queuedId){
 						if (queuedObj.hasOwnProperty("fileProperties")){
 							let typeComponents = queuedObj.fileProperties;
 				            $("#showItems").empty();
+							$("#showObjects").empty();
 							let metadataType = $("#typeName").val();
 							
 						  	let packageMap = new Map(JSON.parse(localStorage.getItem("packageMap")));
@@ -145,46 +155,131 @@ function getQueuedResult(queuedId){
 							}
 							let oldSelectedList = packageMap.get(metadataType);
 							console.log('oldSelectedList '+oldSelectedList);
-							
-							console.log(packageMap.has(metadataType));
-							console.log(packageMap.get(metadataType));
-							
-				           	let components = '<div id="componentsId">';
-							components += '<input type="submit" value="Add/Remove" onclick="addComponent()"><br/><br/>';
-							components += '<table>';
-							components += '<tr>';
-								components += '<th>Name</th>';
-								components += '<th><input type="checkbox" id="select-all" name="selectAll" onclick="selectAll(this)"></th>';
-							components += '</tr>';
-							
+
 							let componentNames = [];
 							for (let i = 0; i < typeComponents.length; i++) {
 								let component = typeComponents[i];
-								if (component.type === metadataType){
-									componentNames.push(component.fullName);
-								}
+								componentNames.push(component.fullName);
 							}		
+							console.log(componentNames);
+							console.log("jResult.hasOwnProperty('standardObjects') "+jResult.hasOwnProperty("standardObjects"));
+							if (jResult.hasOwnProperty("standardObjects")){
+								let standardObjects = jResult.standardObjects;
+								console.log(standardObjects);
+								for (let i = 0; i < standardObjects.length; i++) {
+									componentNames.push(standardObjects[i]);
+								}
+							}
 							
 							componentNames.sort();
-										
-							for (let i = 0; i < componentNames.length; i++) {
-									let componentFullName = componentNames[i];
-									let selected = oldSelectedList.includes(componentFullName);
-									components += '<tr>';	
-										components += '<td><label for="component"> '+componentFullName+'</label></td>';
-										components += '<td><input type="checkbox" id="'+componentFullName+'" name="component" value="'+componentFullName+'"'; 
-										if (selected){
-											components += ' checked ';
-										}
-									components += '></td></tr>';								
+
+							
+							if (metadataType === "CustomField"){
+								console.log(metadataType);
+								let selectObjects = '';
+					           	selectObjects += '<label for="objectName">Choose an object:</label>';
+								selectObjects += '<select name="objectName" id="objectName" onchange="selectedObject()">';
+								selectObjects += '<option value=""></option>';
+								for (let i = 0; i < componentNames.length; i++) {
+									selectObjects += '<option value="'+componentNames[i]+'">'+componentNames[i]+'</option>';
+								}
+								selectObjects += '</select>';
+					            $(selectObjects).appendTo("#showObjects");
+								console.log(componentNames);
+								return ;
 							}
-							components += '</table><br/>';
-							components += '<input type="submit" value="Add/Remove" onclick="addComponent()">';
-							components += '</div>';
-				            $(components).appendTo("#showItems");
+							
+							createTable(oldSelectedList, componentNames);
+
 						}
 					}
 				}
+			}
+		},
+		error : function(e) {
+			console.error("ERROR: ", e);
+		}
+    });
+}
+
+function createTable(oldSelectedList, componentNames){
+	let metadataType = $("#typeName").val();
+	let objectName = "";
+	if (metadataType === "CustomField"){
+		objectName = $("#objectName").val();
+	}
+	
+	let components = '<div id="componentsId">';
+	components += '<input type="submit" value="Add/Remove" onclick="addComponent()"><br/><br/>';
+	components += '<table>';
+	components += '<tr>';
+		components += '<th>Name</th>';
+		components += '<th><input type="checkbox" id="select-all" name="selectAll" onclick="selectAll(this)"></th>';
+	components += '</tr>';
+	
+				
+	for (let i = 0; i < componentNames.length; i++) {
+			let componentFullName = componentNames[i];
+			let thisValue = componentFullName;
+			if (objectName.length > 0){
+				thisValue = objectName +'.'+componentFullName;
+			}
+			let selected = oldSelectedList.includes(componentFullName);
+			components += '<tr>';	
+				components += '<td><label for="component"> '+componentFullName+'</label></td>';
+				components += '<td><input type="checkbox" id="'+componentFullName+'" name="component" value="'+thisValue+'"'; 
+				if (selected){
+					components += ' checked ';
+				}
+			components += '></td></tr>';								
+	}
+	components += '</table><br/>';
+	components += '<input type="submit" value="Add/Remove" onclick="addComponent()">';
+	components += '</div>';
+    $(components).appendTo("#showItems");
+}
+
+function selectedObject(){
+	let data = {}
+    data["orgId"] = $("#orgId").val();
+    data["baseUrl"] = $("#baseUrl").val();
+    data["sessionId"] = $("#sessionId").val();
+    data["apiVersion"] = $("#apiVersion").val();
+	data["objectName"] = $("#objectName").val();;
+    console.log("selectedObject="+JSON.stringify(data));
+
+	$.ajax({
+    	type : "POST",
+		contentType : "application/json",
+		url : "/getFieldsByObject",
+		data : JSON.stringify(data),
+		dataType : 'text',
+		success : function(result) {
+			console.log(result);
+			let jResult = JSON.parse(result);
+			
+			if (jResult.statusCode != 200){
+				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showTypes");
+				console.log(new Date());
+			} else {
+				let fields = jResult.Response;
+				console.log(fields);
+				
+				$("#showItems").empty();
+				let metadataType = $("#typeName").val();
+				
+			  	let packageMap = new Map(JSON.parse(localStorage.getItem("packageMap")));
+				
+				if (!packageMap.has(metadataType)){
+					console.log('added new type '+metadataType);
+					packageMap.set(metadataType, []);
+				}
+				let oldSelectedList = packageMap.get(metadataType);
+				console.log('oldSelectedList '+oldSelectedList);
+		
+				fields.sort();
+				
+				createTable(oldSelectedList, fields);
 			}
 		},
 		error : function(e) {
@@ -219,17 +314,33 @@ function addComponent(){
 
 	if(!packageMap.has(typeName)){
 		console.log('added new type '+typeName);
-		//packageMap.set(typeName, []);
+		packageMap.set(typeName, []);
 	}
 	if (newSelectedSet.length > 0){
-		newSelectedSet.sort();
+		console.log('concat '+typeName);
+		let oldList = packageMap.get(typeName);
+		console.log('before oldList '+oldList);
+		for( let i = 0; i < newSelectedSet.length; i++){ 
+			// to do: debug this section! something is wrong
+    		oldList.push(newSelectedSet[i]);
+			console.log('add '+newSelectedSet[i]);
+		}
+		oldList.sort();
+		console.log('after oldList '+oldList);
 		packageMap.set(typeName, Array.from(newSelectedSet));
 	} else {
+		console.log('delete '+typeName);
 		packageMap.delete(typeName);
 	}
 	console.log(packageMap);
 	
-    $("#packageTreeId").empty();
+    renderTree(packageMap);
+
+	localStorage.setItem("packageMap", JSON.stringify(Array.from(packageMap.entries())));
+}
+
+function renderTree(packageMap){
+	$("#packageTreeId").empty();
 
 	if (packageMap.size > 0){
 		let packageTree = '<ul id="myUL">';
@@ -255,8 +366,6 @@ function addComponent(){
 	    $(packageTree).appendTo("#packageTreeId");
 
 	}
-
-	localStorage.setItem("packageMap", JSON.stringify(Array.from(packageMap.entries())));
 }
 
 function carretFunc(element){
