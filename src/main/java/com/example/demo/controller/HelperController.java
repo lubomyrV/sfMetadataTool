@@ -102,8 +102,8 @@ public class HelperController {
 		return new JSONObject(resultMap).toString();
 	}
 	
-	@PostMapping("/getFieldsByObject")
-    public String getFieldsByObject (@RequestBody String data) {
+	@PostMapping("/getObject")
+    public String getObject (@RequestBody String data) {
 		JSONObject obj = new JSONObject(data);
 		String sessionId = obj.getString("sessionId");
 		String orgId = obj.getString("orgId");
@@ -226,13 +226,9 @@ public class HelperController {
 	
 	private Set<String> parseXmlResponse(String xmlResponse){
 		Set<String> xmlNameTypes = new HashSet<String>();
-		int PRETTY_PRINT_INDENT_FACTOR = 4;
-		String jsonPrettyPrintString = "";
 		JSONObject xmlJSONObj = null;
 		
 		xmlJSONObj = XML.toJSONObject(xmlResponse);
-		//System.out.println(xmlJSONObj);
-        jsonPrettyPrintString = xmlJSONObj.toString(PRETTY_PRINT_INDENT_FACTOR);
 
 		System.out.println(xmlJSONObj);
 		for (String keyEnvelope : xmlJSONObj.keySet()) {
@@ -262,15 +258,30 @@ public class HelperController {
         	                    	xmlNameTypes.add(xmlJSONObj5.toString());
     	                    	} else if (xmlJSONObj5.has("records")) {
     	                    		JSONObject records = (JSONObject)xmlJSONObj5.get("records");
+        	                    	xmlNameTypes.add(records.toString());    	        	                    	
+    	                    		/*
     	                    		if (records.has("fields")) {
-        	                    		JSONArray fields = (JSONArray) records.get("fields");
+    	                    			JSONArray fields = null;
+    	                    			JSONObject record = null;
+    	                    			try {
+    	                    				fields = (JSONArray) records.get("fields");											
+										} catch (Exception e) {
+											record = (JSONObject) records.get("fields");
+										}
+    	                    			if (fields != null ) {
+    	                    				fields = new JSONArray();
+    	                    				fields.put(record);
+    	                    			}
         	                    		for (int i = 0; i < fields.length(); i++) {
         	                    			JSONObject field = fields.getJSONObject(i);
         	        	                    if (field.has("fullName")) {
         	        	                    	xmlNameTypes.add(field.getString("fullName"));    	        	                    	
         	        	                    }
     									}
+    	                    		} else if (records.has("recordTypes")) {
+    	                    			
     	                    		}
+    	                    		*/
     	                    	}
     	                    }
     	    			}

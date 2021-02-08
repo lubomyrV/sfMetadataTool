@@ -60,7 +60,7 @@ function selectedType(){
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
 	let metadataType = $("#typeName").val();
-	if (metadataType === "CustomField"){
+	if (metadataType === "CustomField" || metadataType === "RecordType"){
 		metadataType = "CustomObject";
 	}
 	data["typeName"] = metadataType;
@@ -106,7 +106,7 @@ function getQueuedResult(queuedId){
     data["apiVersion"] = $("#apiVersion").val();
 	let metadataType = $("#typeName").val();
 
-	if (metadataType === "CustomField"){
+	if (metadataType === "CustomField" || metadataType === "RecordType"){
 		metadataType = "CustomObject";
 	}
 	data["typeName"] = metadataType;
@@ -174,7 +174,7 @@ function getQueuedResult(queuedId){
 							componentNames.sort();
 
 							
-							if (metadataType === "CustomField"){
+							if (metadataType === "CustomField" || metadataType === "RecordType"){
 								console.log(metadataType);
 								let selectObjects = '';
 					           	selectObjects += '<label for="objectName">Choose an object:</label>';
@@ -203,9 +203,10 @@ function getQueuedResult(queuedId){
 }
 
 function createTable(oldSelectedList, componentNames){
+	$("#showItems").empty();
 	let metadataType = $("#typeName").val();
 	let objectName = "";
-	if (metadataType === "CustomField"){
+	if (metadataType === "CustomField" || metadataType === "RecordType"){
 		objectName = $("#objectName").val();
 	}
 	
@@ -220,11 +221,12 @@ function createTable(oldSelectedList, componentNames){
 				
 	for (let i = 0; i < componentNames.length; i++) {
 			let componentFullName = componentNames[i];
+			let selected = oldSelectedList.includes(componentFullName);
 			let thisValue = componentFullName;
 			if (objectName.length > 0){
 				thisValue = objectName +'.'+componentFullName;
+				selected = oldSelectedList.includes(thisValue);
 			}
-			let selected = oldSelectedList.includes(componentFullName);
 			components += '<tr>';	
 				components += '<td><label for="component"> '+componentFullName+'</label></td>';
 				components += '<td><input type="checkbox" id="'+componentFullName+'" name="component" value="'+thisValue+'"'; 
@@ -245,13 +247,13 @@ function selectedObject(){
     data["baseUrl"] = $("#baseUrl").val();
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
-	data["objectName"] = $("#objectName").val();;
+	data["objectName"] = $("#objectName").val();
     console.log("selectedObject="+JSON.stringify(data));
 
 	$.ajax({
     	type : "POST",
 		contentType : "application/json",
-		url : "/getFieldsByObject",
+		url : "/getObject",
 		data : JSON.stringify(data),
 		dataType : 'text',
 		success : function(result) {
@@ -262,8 +264,6 @@ function selectedObject(){
 				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showTypes");
 				console.log(new Date());
 			} else {
-				let fields = jResult.Response;
-				console.log(fields);
 				
 				$("#showItems").empty();
 				let metadataType = $("#typeName").val();
@@ -276,10 +276,24 @@ function selectedObject(){
 				}
 				let oldSelectedList = packageMap.get(metadataType);
 				console.log('oldSelectedList '+oldSelectedList);
-		
-				fields.sort();
 				
-				createTable(oldSelectedList, fields);
+				let resp = JSON.parse(jResult.Response);
+				
+				let components = [];
+				let wrapCmp = [];
+				if (metadataType === "CustomField" && resp.hasOwnProperty("fields")){
+					wrapCmp = resp.fields;
+				} else if (metadataType === "RecordType" && resp.hasOwnProperty("recordTypes")){
+					wrapCmp = resp.recordTypes;
+				}
+				for (let i = 0; i < wrapCmp.length; ++i){
+					components.push(wrapCmp[i].fullName);
+				}
+
+				components.sort();
+				console.log(components);
+				
+				createTable(oldSelectedList, components);
 			}
 		},
 		error : function(e) {
@@ -304,40 +318,51 @@ function addComponent(){
   	let packageMap = new Map(JSON.parse(localStorage.getItem("packageMap")));
 	
 	let newSelectedSet = [];
-	$('#componentsId input:checked').each(function() {
-		if ($(this).attr('value')!= undefined){
-	    	newSelectedSet.push($(this).attr('value'));			
+	let valueMap = new Map();
+	let checkboxes = document.getElementsByName('component');
+	for (let i = 0; i<checkboxes.length; i++) {
+		valueMap.set(checkboxes[i].value, checkboxes[i].checked);
+		if (checkboxes[i].checked){
+			newSelectedSet.push(checkboxes[i].value);
 		}
-	});
+	}
 	
 	let typeName = $("#typeName").val();
-
-	if(!packageMap.has(typeName)){
-		console.log('added new type '+typeName);
-		packageMap.set(typeName, []);
-	}
-	if (newSelectedSet.length > 0){
-		console.log('concat '+typeName);
-		let oldList = packageMap.get(typeName);
-		console.log('before oldList '+oldList);
-		for( let i = 0; i < newSelectedSet.length; i++){ 
-			// to do: debug this section! something is wrong
-    		oldList.push(newSelectedSet[i]);
-			console.log('add '+newSelectedSet[i]);
+	if (typeName === 'CustomField'){
+		
+		if (!packageMap.has(typeName)){
+			newSelectedSet.sort();
+			packageMap.set(typeName, Array.from(newSelectedSet));
+		} else {
+			let oldValues = new Set(packageMap.get(typeName));
+			
+			for (let [value, isSelected] of valueMap) {
+				if (oldValues.has(value) && !isSelected){
+					oldValues.delete(value);
+				} else if (!oldValues.has(value) && isSelected){
+					oldValues.add(value);
+				}
+			}
+			
+			let allValues = Array.from(oldValues);
+			allValues.sort();
+			packageMap.set(typeName, allValues);
 		}
-		oldList.sort();
-		console.log('after oldList '+oldList);
-		packageMap.set(typeName, Array.from(newSelectedSet));
 	} else {
-		console.log('delete '+typeName);
-		packageMap.delete(typeName);
+		if (newSelectedSet.length > 0){
+			newSelectedSet.sort();
+			packageMap.set(typeName, Array.from(newSelectedSet));
+		} else {
+			packageMap.delete(typeName);
+		}
 	}
 	console.log(packageMap);
 	
-    renderTree(packageMap);
+   	renderTree(packageMap);
 
 	localStorage.setItem("packageMap", JSON.stringify(Array.from(packageMap.entries())));
 }
+
 
 function renderTree(packageMap){
 	$("#packageTreeId").empty();
