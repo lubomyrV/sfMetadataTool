@@ -20,6 +20,6 @@ In order to run the app, go to the `target/` folder and type
 
 `$ java -jar demo-0.0.1-SNAPSHOT.jar`
 
-Open `http://localhost:8080/` to connect to org.
+Open `http://localhost:8080/` and fill in credentials to connect to your org.
 
 ![example](https://github.com/lubomyrV/sfMetadataTool/blob/master/sfmd1.png)
