@@ -9,6 +9,7 @@ In order to compile this app - the following tools are needed:
 2) Apache Maven 3.3.9
 
 To assembly via command line, type:
+
 `mvn clean`
 
 `mvn compile`
