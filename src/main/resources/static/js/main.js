@@ -206,6 +206,15 @@ function getQueuedResult(queuedId){
 
 function createTable(oldSelectedList, componentNames){
 	$("#showItems").empty();
+	
+	if (componentNames.length == 0){
+		let components = '<div id="componentsId">';
+		components += '<p>No data to display.';
+		components += '</div>';
+    	$(components).appendTo("#showItems");
+		return ;
+	}
+	
 	let metadataType = $("#typeName").val();
 	let objectName = "";
 	if (metadataType === "CustomField" || metadataType === "RecordType"){
