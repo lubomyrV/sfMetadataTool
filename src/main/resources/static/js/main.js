@@ -12,7 +12,7 @@ function connect(){
     data["baseUrl"] = $("#baseUrl").val();
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
-    ////console.log("connect="+JSON.stringify(data));
+    //console.log("connect="+JSON.stringify(data));
 
     let packageMap = new Map();
 	//console.log(packageMap);
@@ -25,7 +25,7 @@ function connect(){
 		data : JSON.stringify(data),
 		dataType : 'text',
 		success : function(result) {
-			////console.log(result);
+			//console.log(result);
 			let jResult = JSON.parse(result);
             $("#showTypes").empty();
 			
@@ -73,7 +73,7 @@ function selectedType(){
 		data : JSON.stringify(data),
 		dataType : 'text',
 		success : function(result) {
-			////console.log(result);
+			//console.log(result);
 			let jResult = JSON.parse(result);
 			
 			if (jResult.statusCode != 200){
@@ -81,7 +81,7 @@ function selectedType(){
 				//console.log(new Date());
 			} else {
 				let retrieveResult = JSON.parse(jResult.Response[0]);
-				////console.log(retrieveResult);
+				//console.log(retrieveResult);
 				if (retrieveResult.hasOwnProperty('id') && retrieveResult.hasOwnProperty('done')){
 					if (!retrieveResult.done){
 						$("#showItems").empty();
@@ -119,7 +119,7 @@ function getQueuedResult(queuedId){
 		data : JSON.stringify(data),
 		dataType : 'text',
 		success : function(result) {
-			////console.log(result);
+			//console.log(result);
 			let queuedResult = JSON.parse(result);
 			
 			let jResult = JSON.parse(result);
@@ -132,7 +132,7 @@ function getQueuedResult(queuedId){
 
 				if (queuedResult.length == 1){
 					let queuedObj = JSON.parse(queuedResult[0]);
-					////console.log(queuedObj);
+					//console.log(queuedObj);
 					if (queuedObj.hasOwnProperty("success") && !queuedObj.success){
 					  	let jobId = localStorage.getItem("queuedId");
 						$("#showItems").empty();
@@ -253,6 +253,7 @@ function createTable(oldSelectedList, componentNames){
 }
 
 function selectedObject(){
+	$("#showItems").empty();
 	let data = {}
     data["orgId"] = $("#orgId").val();
     data["baseUrl"] = $("#baseUrl").val();
@@ -293,9 +294,18 @@ function selectedObject(){
 				let components = [];
 				let wrapCmp = [];
 				if (metadataType === "CustomField" && resp.hasOwnProperty("fields")){
-					wrapCmp = resp.fields;
+					//console.log(resp.fields);
+					if (Array.isArray(resp.fields)){
+						wrapCmp.push.apply(wrapCmp, resp.fields);
+					} else {
+						wrapCmp.push(resp.fields);
+					}
 				} else if (metadataType === "RecordType" && resp.hasOwnProperty("recordTypes")){
-					wrapCmp = resp.recordTypes;
+					if (Array.isArray(resp.recordTypes)){
+						wrapCmp.push.apply(wrapCmp, resp.recordTypes);
+					} else {
+						wrapCmp.push(resp.recordTypes);
+					}
 				}
 				for (let i = 0; i < wrapCmp.length; ++i){
 					if (wrapCmp[i].fullName != "package.xml"){
