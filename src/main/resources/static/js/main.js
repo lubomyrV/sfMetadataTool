@@ -1,6 +1,6 @@
 $(document).ready(function () {
 	//console.log("document: ready");
-	//init();			
+	//init();
 });
 
 function connect(){
@@ -159,7 +159,9 @@ function getQueuedResult(queuedId){
 							let componentNames = [];
 							for (let i = 0; i < typeComponents.length; i++) {
 								let component = typeComponents[i];
-								componentNames.push(component.fullName);
+								if (component.fullName != "package.xml"){
+									componentNames.push(component.fullName);
+								}
 							}		
 							//console.log(componentNames);
 							//console.log("jResult.hasOwnProperty('standardObjects') "+jResult.hasOwnProperty("standardObjects"));
@@ -287,7 +289,9 @@ function selectedObject(){
 					wrapCmp = resp.recordTypes;
 				}
 				for (let i = 0; i < wrapCmp.length; ++i){
-					components.push(wrapCmp[i].fullName);
+					if (wrapCmp[i].fullName != "package.xml"){
+						components.push(wrapCmp[i].fullName);
+					}
 				}
 
 				components.sort();
