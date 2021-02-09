@@ -66,7 +66,7 @@ public class HelperController {
 		Set<String> standardObjects = new HashSet<String>();
 		if (typeName.equalsIgnoreCase("customobject") && xmlNameTypes.size() > 0) {
 			JSONObject jobj = null;
-			for (Iterator iterator = xmlNameTypes.iterator(); iterator.hasNext();) {
+			for (Iterator<String> iterator = xmlNameTypes.iterator(); iterator.hasNext();) {
 				String rawjson = (String) iterator.next();
 				jobj = new JSONObject(rawjson);
 				break;
@@ -74,8 +74,8 @@ public class HelperController {
 			
 			
 			if (jobj != null && jobj.has("success") && (boolean)jobj.get("success")) {
-				System.out.println("jobj "+jobj);
-				System.out.println("success "+jobj.has("success"));
+				//System.out.println("jobj "+jobj);
+				//System.out.println("success "+jobj.has("success"));
 				String standardObjectsStr = readFile("standardObjects.txt");
 				String [] standardObjectsArray = standardObjectsStr.split(",");
 				for (int i = 0; i < standardObjectsArray.length; i++) {
@@ -83,21 +83,21 @@ public class HelperController {
 					standardObjects.add(standardObject);
 				}
 			}
-			System.out.println(typeName+" standardObjects "+standardObjects);
+			//System.out.println(typeName+" standardObjects "+standardObjects);
 		}
 
 		JSONArray jarray = new JSONArray(new TreeSet<String>(xmlNameTypes).toArray());
 		if (standardObjects.size() > 0) {
 			try {
 				JSONArray stdObjects = new JSONArray(standardObjects.toString());				
-				System.out.println(stdObjects);
+				//System.out.println(stdObjects);
 				resultMap.put("standardObjects", stdObjects);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
 		}
 		resultMap.put("Response", jarray);
-		System.out.println("resultMap "+resultMap);
+		//System.out.println("resultMap "+resultMap);
 
 		return new JSONObject(resultMap).toString();
 	}
@@ -110,7 +110,7 @@ public class HelperController {
 		String baseUrl = obj.getString("baseUrl");
 		float apiVersion = Float.valueOf(obj.getString("apiVersion"));
 		String objectName = obj.getString("objectName");
-		System.out.println("objectName = "+objectName);
+		//System.out.println("objectName = "+objectName);
 		
 		String xmlfile = readFile("readMetadata.xml");
 		
@@ -147,7 +147,7 @@ public class HelperController {
 		String baseUrl = obj.getString("baseUrl");
 		float apiVersion = Float.valueOf(obj.getString("apiVersion"));
 		String typeName = obj.getString("typeName");
-		System.out.println("typeName = "+typeName);
+		//System.out.println("typeName = "+typeName);
 		
 		String xmlfile = readFile("retrieveRequest.xml");
 		
@@ -211,7 +211,7 @@ public class HelperController {
 		
 		if (!xmlNameTypes.isEmpty()) {
 			String metadataTypesData = readFile("metadataTypes.txt");
-			System.out.println("metadataTypesData: "+metadataTypesData);
+			//System.out.println("metadataTypesData: "+metadataTypesData);
 			if (!metadataTypesData.isBlank()) {
 				String [] mtypesArr = metadataTypesData.split(",");
 				for (int i = 0; i < mtypesArr.length; i++) {
@@ -230,20 +230,20 @@ public class HelperController {
 		
 		xmlJSONObj = XML.toJSONObject(xmlResponse);
 
-		System.out.println(xmlJSONObj);
+		//System.out.println(xmlJSONObj);
 		for (String keyEnvelope : xmlJSONObj.keySet()) {
             JSONObject xmlJSONObj2 = (JSONObject) xmlJSONObj.get(keyEnvelope);
             for (String keyBody : xmlJSONObj2.keySet()) {
             	if (keyBody.equalsIgnoreCase("soapenv:Body")) {
             		JSONObject xmlJSONObj3 = (JSONObject) xmlJSONObj2.get("soapenv:Body");
-            		System.out.println(xmlJSONObj3);
+            		//System.out.println(xmlJSONObj3);
                 	if (xmlJSONObj3.has("soapenv:Fault")) {
                 		JSONObject faultObj = (JSONObject) xmlJSONObj3.get("soapenv:Fault");
                 		xmlNameTypes.add(faultObj.getString("faultstring"));
                 	} else {
                 		for (String key : xmlJSONObj3.keySet()) {
                 			JSONObject xmlJSONObj4 = (JSONObject) xmlJSONObj3.get(key);
-	                    	System.out.println(xmlJSONObj4);
+	                    	//System.out.println(xmlJSONObj4);
     	                    if (xmlJSONObj4.has("result")) {
     	                    	JSONObject xmlJSONObj5 = (JSONObject) xmlJSONObj4.get("result");
     	                    	if (xmlJSONObj5.has("metadataObjects")) {
@@ -258,30 +258,7 @@ public class HelperController {
         	                    	xmlNameTypes.add(xmlJSONObj5.toString());
     	                    	} else if (xmlJSONObj5.has("records")) {
     	                    		JSONObject records = (JSONObject)xmlJSONObj5.get("records");
-        	                    	xmlNameTypes.add(records.toString());    	        	                    	
-    	                    		/*
-    	                    		if (records.has("fields")) {
-    	                    			JSONArray fields = null;
-    	                    			JSONObject record = null;
-    	                    			try {
-    	                    				fields = (JSONArray) records.get("fields");											
-										} catch (Exception e) {
-											record = (JSONObject) records.get("fields");
-										}
-    	                    			if (fields != null ) {
-    	                    				fields = new JSONArray();
-    	                    				fields.put(record);
-    	                    			}
-        	                    		for (int i = 0; i < fields.length(); i++) {
-        	                    			JSONObject field = fields.getJSONObject(i);
-        	        	                    if (field.has("fullName")) {
-        	        	                    	xmlNameTypes.add(field.getString("fullName"));    	        	                    	
-        	        	                    }
-    									}
-    	                    		} else if (records.has("recordTypes")) {
-    	                    			
-    	                    		}
-    	                    		*/
+        	                    	xmlNameTypes.add(records.toString());
     	                    	}
     	                    }
     	    			}

@@ -126,19 +126,22 @@
 <body>	
 	
 	<div class="header">
-	  <h1>Header</h1>
+	  <!-- 
+	   <h1>Header</h1>
+	   -->
 	</div>
 	
 	<div class="topnav">
+	<!--  
 	  <a href="#">Link</a>
 	  <a href="#">Link</a>
 	  <a href="#">Link</a>
-	</div>
-	
+	-->
+	</div>	
 	<div class="row">
 	  <div class="column">
 	    <h2>Column 1</h2>
-		<form action="/action_page.php">
+		<form>
 			<label for="orgId">Organization Id:</label><br/>
 			<input type="text" id="orgId" name="orgId" required><br/>
 			<label for="baseUrl">Salesforce base URL:</label><br/>
@@ -163,49 +166,12 @@
 		<p>Click on the arrow(s) to open or close the tree branches.</p>
 		
 		<div id="packageTreeId"></div>
-		
-		<!--  
-		<ul id="myUL">
-		  <li><span class="caret">test package.xml</span>
-		    <ul class="nested">
-		      <li>CustomObject</li>
-		      <li>ApexClass</li>
-		      <li><span class="caret">CustomField</span>
-		        <ul class="nested">
-		          <li>Case</li>
-		          <li>Contact</li>
-		          <li><span class="caret">Account</span>
-		            <ul class="nested">
-		              <li>Phone</li>
-		              <li>Custom_Field__c</li>
-		              <li>Name</li>
-		              <li>Is_Active__c</li>
-		            </ul>
-		          </li>
-		        </ul>
-		      </li>  
-		    </ul>
-		  </li>
-		</ul>
-		-->
-	    
+
 	  </div>
 	</div>
 	
     <script type="text/javascript" src="https://code.jquery.com/jquery-git.min.js"></script>
     <script type="text/javascript" src="js/main.js" ></script>
-    
-    <script language="JavaScript">
-    	/*
-		let toggler = document.getElementsByClassName("caret");		
-		for (let i = 0; i < toggler.length; i++) {
-		  toggler[i].addEventListener("click", function() {
-		    this.parentElement.querySelector(".nested").classList.toggle("active");
-		    this.classList.toggle("caret-down");
-		  });
-		}
-		*/
-	</script>
     
 </body>
 </html>

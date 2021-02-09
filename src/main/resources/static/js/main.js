@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	console.log("document: ready");
+	//console.log("document: ready");
 	//init();			
 });
 
@@ -12,10 +12,10 @@ function connect(){
     data["baseUrl"] = $("#baseUrl").val();
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
-    //console.log("connect="+JSON.stringify(data));
+    ////console.log("connect="+JSON.stringify(data));
 
     let packageMap = new Map();
-	console.log(packageMap);
+	//console.log(packageMap);
   	localStorage.setItem("packageMap", JSON.stringify(Array.from(packageMap.entries())));
 
     $.ajax({
@@ -25,7 +25,7 @@ function connect(){
 		data : JSON.stringify(data),
 		dataType : 'text',
 		success : function(result) {
-			//console.log(result);
+			////console.log(result);
 			let jResult = JSON.parse(result);
             $("#showTypes").empty();
 			
@@ -37,7 +37,7 @@ function connect(){
 				selectOptions += '<select name="typeName" id="typeName" onchange="selectedType()">';
 				selectOptions += '<option value=""></option>';
 				let metadataTypes = jResult.Response;
-				console.log(metadataTypes);
+				//console.log(metadataTypes);
 
 				for (let i = 0; i < metadataTypes.length; i++) {
 					selectOptions += '<option value="'+metadataTypes[i]+'">'+metadataTypes[i]+'</option>';
@@ -64,7 +64,7 @@ function selectedType(){
 		metadataType = "CustomObject";
 	}
 	data["typeName"] = metadataType;
-    console.log("selectedType="+JSON.stringify(data));
+    //console.log("selectedType="+JSON.stringify(data));
 
 	$.ajax({
     	type : "POST",
@@ -73,15 +73,15 @@ function selectedType(){
 		data : JSON.stringify(data),
 		dataType : 'text',
 		success : function(result) {
-			//console.log(result);
+			////console.log(result);
 			let jResult = JSON.parse(result);
 			
 			if (jResult.statusCode != 200){
 				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showTypes");
-				console.log(new Date());
+				//console.log(new Date());
 			} else {
 				let retrieveResult = JSON.parse(jResult.Response[0]);
-				//console.log(retrieveResult);
+				////console.log(retrieveResult);
 				if (retrieveResult.hasOwnProperty('id') && retrieveResult.hasOwnProperty('done')){
 					if (!retrieveResult.done){
 						$("#showItems").empty();
@@ -119,7 +119,7 @@ function getQueuedResult(queuedId){
 		data : JSON.stringify(data),
 		dataType : 'text',
 		success : function(result) {
-			//console.log(result);
+			////console.log(result);
 			let queuedResult = JSON.parse(result);
 			
 			let jResult = JSON.parse(result);
@@ -128,11 +128,11 @@ function getQueuedResult(queuedId){
 				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showTypes");
 			} else {
 				let queuedResult = jResult.Response;
-				console.log(jResult);
+				//console.log(jResult);
 
 				if (queuedResult.length == 1){
 					let queuedObj = JSON.parse(queuedResult[0]);
-					//console.log(queuedObj);
+					////console.log(queuedObj);
 					if (queuedObj.hasOwnProperty("success") && !queuedObj.success){
 					  	let jobId = localStorage.getItem("queuedId");
 						$("#showItems").empty();
@@ -140,7 +140,7 @@ function getQueuedResult(queuedId){
 
 						getQueuedResult(jobId);
 					} else {
-						console.log(new Date());
+						//console.log(new Date());
 						if (queuedObj.hasOwnProperty("fileProperties")){
 							let typeComponents = queuedObj.fileProperties;
 				            $("#showItems").empty();
@@ -150,22 +150,22 @@ function getQueuedResult(queuedId){
 						  	let packageMap = new Map(JSON.parse(localStorage.getItem("packageMap")));
 							
 							if (!packageMap.has(metadataType)){
-								console.log('added new type '+metadataType);
+								//console.log('added new type '+metadataType);
 								packageMap.set(metadataType, []);
 							}
 							let oldSelectedList = packageMap.get(metadataType);
-							console.log('oldSelectedList '+oldSelectedList);
+							//console.log('oldSelectedList '+oldSelectedList);
 
 							let componentNames = [];
 							for (let i = 0; i < typeComponents.length; i++) {
 								let component = typeComponents[i];
 								componentNames.push(component.fullName);
 							}		
-							console.log(componentNames);
-							console.log("jResult.hasOwnProperty('standardObjects') "+jResult.hasOwnProperty("standardObjects"));
+							//console.log(componentNames);
+							//console.log("jResult.hasOwnProperty('standardObjects') "+jResult.hasOwnProperty("standardObjects"));
 							if (jResult.hasOwnProperty("standardObjects")){
 								let standardObjects = jResult.standardObjects;
-								console.log(standardObjects);
+								//console.log(standardObjects);
 								for (let i = 0; i < standardObjects.length; i++) {
 									componentNames.push(standardObjects[i]);
 								}
@@ -175,7 +175,7 @@ function getQueuedResult(queuedId){
 
 							
 							if (metadataType === "CustomField" || metadataType === "RecordType"){
-								console.log(metadataType);
+								//console.log(metadataType);
 								let selectObjects = '';
 					           	selectObjects += '<label for="objectName">Choose an object:</label>';
 								selectObjects += '<select name="objectName" id="objectName" onchange="selectedObject()">';
@@ -185,7 +185,7 @@ function getQueuedResult(queuedId){
 								}
 								selectObjects += '</select>';
 					            $(selectObjects).appendTo("#showObjects");
-								console.log(componentNames);
+								//console.log(componentNames);
 								return ;
 							}
 							
@@ -248,7 +248,7 @@ function selectedObject(){
     data["sessionId"] = $("#sessionId").val();
     data["apiVersion"] = $("#apiVersion").val();
 	data["objectName"] = $("#objectName").val();
-    console.log("selectedObject="+JSON.stringify(data));
+    //console.log("selectedObject="+JSON.stringify(data));
 
 	$.ajax({
     	type : "POST",
@@ -257,12 +257,12 @@ function selectedObject(){
 		data : JSON.stringify(data),
 		dataType : 'text',
 		success : function(result) {
-			console.log(result);
+			//console.log(result);
 			let jResult = JSON.parse(result);
 			
 			if (jResult.statusCode != 200){
 				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showTypes");
-				console.log(new Date());
+				//console.log(new Date());
 			} else {
 				
 				$("#showItems").empty();
@@ -271,11 +271,11 @@ function selectedObject(){
 			  	let packageMap = new Map(JSON.parse(localStorage.getItem("packageMap")));
 				
 				if (!packageMap.has(metadataType)){
-					console.log('added new type '+metadataType);
+					//console.log('added new type '+metadataType);
 					packageMap.set(metadataType, []);
 				}
 				let oldSelectedList = packageMap.get(metadataType);
-				console.log('oldSelectedList '+oldSelectedList);
+				//console.log('oldSelectedList '+oldSelectedList);
 				
 				let resp = JSON.parse(jResult.Response);
 				
@@ -291,7 +291,7 @@ function selectedObject(){
 				}
 
 				components.sort();
-				console.log(components);
+				//console.log(components);
 				
 				createTable(oldSelectedList, components);
 			}
@@ -303,10 +303,10 @@ function selectedObject(){
 }
 
 function selectAll(source) {
-	console.log('selectAll');
+	//console.log('selectAll');
  	let checkboxes = document.getElementsByName('component');
-	console.log(source +' '+source.checked);
-	console.log(checkboxes);
+	//console.log(source +' '+source.checked);
+	//console.log(checkboxes);
 
 	for( let i = 0; i < checkboxes.length; i++){ 
     	checkboxes[i].checked = source.checked;
@@ -356,7 +356,7 @@ function addComponent(){
 			packageMap.delete(typeName);
 		}
 	}
-	console.log(packageMap);
+	//console.log(packageMap);
 	
    	renderTree(packageMap);
 
@@ -387,14 +387,14 @@ function renderTree(packageMap){
 			packageTree += '</li>';
 		packageTree += '</ul><br/>';
 		
-		packageTree += '<input type="submit" value="create file" onclick="createPackageXml()"><br/>';
+		packageTree += '<input type="submit" value="Download" onclick="createPackageXml()"><br/>';
 	    $(packageTree).appendTo("#packageTreeId");
 
 	}
 }
 
 function carretFunc(element){
-	console.log(element);
+	//console.log(element);
 	element.parentElement.querySelector(".nested").classList.toggle("active");
 	element.classList.toggle("caret-down");
 }
