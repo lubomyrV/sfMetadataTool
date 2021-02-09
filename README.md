@@ -20,6 +20,8 @@ In order to run the app, go to the `target/` folder and type
 
 `$ java -jar demo-0.0.1-SNAPSHOT.jar`
 
+All config files `standardObjects.txt, metadataTypes.txt, retrieveResponse.xml, retrieveRequest.xml, readMetadata.xml, describeSObjects.xml  and describeMetadata.xml` should be in the same folder as the demo-0.0.1-SNAPSHOT.jar file.
+
 Open `http://localhost:8080/` and fill in credentials to connect to your org.
 
 ![example](https://github.com/lubomyrV/sfMetadataTool/blob/master/sfmd1.png)
