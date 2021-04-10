@@ -2,6 +2,8 @@
 
 A simple web app based on Spring Boot, it connects to an org, retrieves metadata, and creates a package.xml file. The app communicates with Salesforce Metadata API via SOAP protocol. An example of [the created file](https://github.com/lubomyrV/sfMetadataTool/blob/master/package.xml).
 
+You can take a look how it works: https://sf-metadata-tool.herokuapp.com/
+
 In order to compile this app - the following tools are needed:
 
 1) JRE,JDK v.8
