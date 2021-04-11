@@ -224,6 +224,37 @@ public class HelperController {
 		return new JSONObject(resultMap).toString();
     }
 	
+	@PostMapping("/getAllApiVersions")
+    public String getApiVersions (@RequestBody String data) {
+		JSONObject obj = new JSONObject(data);
+		String baseUrl = obj.getString("baseUrl");
+		String uri = baseUrl+"/services/data/";
+		HttpRequest request = HttpRequest.newBuilder()
+        		.uri(URI.create(uri))
+        		.header("Content-Type", "text/xml")
+        		.header("Accept", "application/json")
+                .build();
+
+        		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		HttpResponse<String> response = null;
+		try {
+			HttpClient httpClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
+			response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		} catch (Exception e) {
+			System.err.println("getApiVersions - An error occurred in the sendPost() method");		
+			//e.printStackTrace();
+			resultMap.put("Exception", e.getMessage());
+		}
+		
+		
+		resultMap.put("statusCode", response.statusCode());
+		//System.out.println(response.body());
+		JSONArray jarray = new JSONArray(response.body());
+		resultMap.put("Response", jarray);
+		return new JSONObject(resultMap).toString();
+    }
+	
 	private Set<String> parseXmlResponse(String xmlResponse){
 		Set<String> xmlNameTypes = new HashSet<String>();
 		JSONObject xmlJSONObj = null;

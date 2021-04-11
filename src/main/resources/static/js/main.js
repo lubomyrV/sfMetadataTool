@@ -3,8 +3,51 @@ $(document).ready(function () {
 	//init();
 });
 
+function getApiVersions(){
+  	let data = {}
+    data["baseUrl"] = $("#baseUrl").val();
+    //console.log("getApiVersions: "+JSON.stringify(data));
+  	$.ajax({
+    	type : "POST",
+		contentType : "application/json",
+		url : "/getAllApiVersions",
+		data : JSON.stringify(data),
+		dataType : 'text',
+		success : function(result) {
+			//console.log(result);
+			let jResult = JSON.parse(result);
+            $("#showApiVersion").empty();
+			
+			if (jResult.statusCode != 200){
+				$('<p>statusCode='+jResult.statusCode+'; Response='+jResult.Response+'</p>').appendTo("#showApiVersion");
+			} else {
+	           	let selectOptions = '';
+	           	selectOptions += '<label for="apiVersion">API Version:</label>';
+				selectOptions += '<select name="apiVersion" id="apiVersion">';
+				let apiVersionList = jResult.Response;
+				apiVersionList.sort(function(a, b){return b.version - a.version});
+				for (let i = 0; i < apiVersionList.length; i++) {
+				let apiVersion = apiVersionList[i];
+					selectOptions += '<option value="'+apiVersion.version+'">'+apiVersion.version+'</option>';
+				}
+				selectOptions += '</select>';
+	            $(selectOptions).appendTo("#showApiVersion");
+			}
+		},
+		error : function(e) {
+			console.error("ERROR: ", JSON.stringify(e));
+		}
+    });
+}
+
 function connect(){
 	$("#showTypes").empty();
+
+	if ($("#orgId").val() == "" || $("#baseUrl").val() == "" || $("#sessionId").val() == ""){
+		$('<p>Please, provide credentials.</p>').appendTo("#showTypes");
+		return null;	
+	}
+
 	$('<p>Connecting...</p>').appendTo("#showTypes");
 
     let data = {}
@@ -47,7 +90,7 @@ function connect(){
 			}
 		},
 		error : function(e) {
-			console.error("ERROR: ", e);
+			console.error("ERROR: ", JSON.stringify(e));
 		}
     });
 }
@@ -93,7 +136,7 @@ function selectedType(){
 			}
 		},
 		error : function(e) {
-			console.error("ERROR: ", e);
+			console.error("ERROR: ", JSON.stringify(e));
 		}
     });
 }
@@ -199,7 +242,7 @@ function getQueuedResult(queuedId){
 			}
 		},
 		error : function(e) {
-			console.error("ERROR: ", e);
+			console.error("ERROR: ", JSON.stringify(e));
 		}
     });
 }
@@ -320,7 +363,7 @@ function selectedObject(){
 			}
 		},
 		error : function(e) {
-			console.error("ERROR: ", e);
+			console.error("ERROR: ", JSON.stringify(e));
 		}
     });
 }
@@ -460,4 +503,15 @@ function download(filename, text) {
   	element.click();
 
   	document.body.removeChild(element);
+}
+
+function copyToClipboard() {
+  let copyText = document.getElementById("myInput");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+}
+
+function showApex() {
+	document.getElementById("apexCode").style.display = "block";
 }

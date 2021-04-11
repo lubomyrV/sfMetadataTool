@@ -1,191 +1,222 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Index page</title>
-	<style>
-		/* ====================Table============================ */
-		
-		table {
-		  font-family: arial, sans-serif;
-		  border-collapse: collapse;
-		}
-		
-		td, th {
-		  border: 1px solid #a0a0a0;
-		  text-align: left;
-		  padding: 8px;
-		}
-		
-		tr:nth-child(even) {
-		  background-color: #dcdcdc;
-		}
-		
-		/* ======================Layout=========================== */
-		
-		* {
-		  box-sizing: border-box;
-		}
-		
-		body {
-		  margin: 0;
-		}
-		
-		/* Style the header */
-		.header {
-		  background-color: #f1f1f1;
-		  padding: 20px;
-		  text-align: center;
-		}
-		
-		/* Style the top navigation bar */
-		.topnav {
-		  overflow: hidden;
-		  background-color: #333;
-		}
-		
-		/* Style the topnav links */
-		.topnav a {
-		  float: left;
-		  display: block;
-		  color: #f2f2f2;
-		  text-align: center;
-		  padding: 14px 16px;
-		  text-decoration: none;
-		}
-		
-		/* Change color on hover */
-		.topnav a:hover {
-		  background-color: #ddd;
-		  color: black;
-		}
-		
-		/* Create three equal columns that floats next to each other */
-		.column {
-		  float: left;
-		  width: 33.33%;
-		  padding: 15px;
-		}
-		
-		/* Clear floats after the columns */
-		.row:after {
-		  content: "";
-		  display: table;
-		  clear: both;
-		}
-		
-		/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
-		@media screen and (max-width:600px) {
-		  .column {
-		    width: 100%;
-		  }
-		}
-		
-		/* =================Tree View======================= */
-		
-		ul, #myUL {
-		  list-style-type: none;
-		}
-		
-		#myUL {
-		  margin: 0;
-		  padding: 0;
-		}
-		
-		.caret {
-		  cursor: pointer;
-		  -webkit-user-select: none; /* Safari 3.1+ */
-		  -moz-user-select: none; /* Firefox 2+ */
-		  -ms-user-select: none; /* IE 10+ */
-		  user-select: none;
-		}
-		
-		.caret::before {
-		  content: "\25B6";
-		  color: black;
-		  display: inline-block;
-		  margin-right: 6px;
-		}
-		
-		.caret-down::before {
-		  -ms-transform: rotate(90deg); /* IE 9 */
-		  -webkit-transform: rotate(90deg); /* Safari */
-		  transform: rotate(90deg);  
-		}
-		
-		.nested {
-		  display: none;
-		}
-		
-		.active {
-		  display: block;
-		}
-		
-		footer {
-		  text-align: center;
-		  padding: 3px;
-		}
-	</style>
-</head>
-<body>	
-	
-	<div class="header">
-	  <!-- 
-	   <h1>Header</h1>
-	   -->
-	</div>
-	
-	<div class="topnav">
-	<!--  
-	  <a href="#">Link</a>
-	  <a href="#">Link</a>
-	  <a href="#">Link</a>
-	-->
-	</div>	
-	<div class="row">
-	  <div class="column">
-	    <h2>Column 1</h2>
-		<form>
-			<label for="orgId">Organization Id:</label><br/>
-			<input type="text" id="orgId" name="orgId" required><br/>
-			<label for="baseUrl">Salesforce base URL:</label><br/>
-			<input type="url" id="baseUrl" name="baseUrl" required><br/>
-			<label for="sessionId">Session Id:</label><br/>
-			<input type="text" id="sessionId" name="sessionId" required><br/>
-			<label for="apiVersion">API Version:</label>
-			<input type="number" id="apiVersion" name="apiVersion" value="50" min="1" maxlength="3" size="2" required><br/><br/>
-			<input type="button" value="Submit" onclick="connect()"><input type="reset">
-		</form>
-	  </div>
-	  
-	  <div class="column">
-	    <h2>Column 2</h2>
-		<div id="showTypes"></div><br/>
-		<div id="showObjects"></div><br/>
-    	<div id="showItems"></div>
-	  </div>
-	  
-	  <div class="column">
-	    <h2>Column 3</h2>	    
-		<p>Click on the arrow(s) to open or close the tree branches.</p>
-		
-		<div id="packageTreeId"></div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Index page</title>
+        <style>
+            /* ====================Table============================ */
 
-	  </div>
-	</div>
-	
-	<footer>
-	  <p>
-		  Author: Lubomyr Voloschak<br/>
-		  <a href="mailto:lubomyr.voloschak@gmail.com">lubomyr.voloschak@gmail.com</a><br/>
-		  <a href="https://github.com/lubomyrV/sfMetadataTool/">Source code</a><br/>
-		  <a href="https://github.com/lubomyrV/sfMetadataTool/issues">Report a problem</a>
-	  </p>
-	</footer>
-	
-    <script type="text/javascript" src="https://code.jquery.com/jquery-git.min.js"></script>
-    <script type="text/javascript" src="js/main.js" ></script>
-    
-</body>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+            }
+
+            td,
+            th {
+                border: 1px solid #a0a0a0;
+                text-align: left;
+                padding: 8px;
+            }
+
+            tr:nth-child(even) {
+                background-color: #dcdcdc;
+            }
+
+            /* ======================Layout=========================== */
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+            }
+
+            /* Style the header */
+            .header {
+                background-color: #f1f1f1;
+                padding: 7px;
+                text-align: center;
+            }
+
+            /* Style the top navigation bar */
+            .topnav {
+                overflow: hidden;
+                background-color: #333;
+            }
+
+            /* Style the topnav links */
+            .topnav a {
+                float: left;
+                display: block;
+                color: #f2f2f2;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+
+            /* Change color on hover */
+            .topnav a:hover {
+                background-color: #ddd;
+                color: black;
+            }
+
+            /* Create three equal columns that floats next to each other */
+            .column {
+                float: left;
+                width: 33.33%;
+                padding: 15px;
+            }
+
+            /* Clear floats after the columns */
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+            @media screen and (max-width: 600px) {
+                .column {
+                    width: 100%;
+                }
+            }
+
+            /* =================Tree View======================= */
+
+            ul,
+            #myUL {
+                list-style-type: none;
+            }
+
+            #myUL {
+                margin: 0;
+                padding: 0;
+            }
+
+            .caret {
+                cursor: pointer;
+                -webkit-user-select: none; /* Safari 3.1+ */
+                -moz-user-select: none; /* Firefox 2+ */
+                -ms-user-select: none; /* IE 10+ */
+                user-select: none;
+            }
+
+            .caret::before {
+                content: "\25B6";
+                color: black;
+                display: inline-block;
+                margin-right: 6px;
+            }
+
+            .caret-down::before {
+                -ms-transform: rotate(90deg); /* IE 9 */
+                -webkit-transform: rotate(90deg); /* Safari */
+                transform: rotate(90deg);
+            }
+
+            .nested {
+                display: none;
+            }
+
+            .active {
+                display: block;
+            }
+
+            footer {
+                text-align: center;
+            }
+			
+			.description {
+				padding: 15px;
+			}
+			
+        </style>
+    </head>
+    <body>
+        <div class="header">
+			<h1>Salesforce metadata tool</h1>
+        </div>
+
+        <div class="topnav">
+            <!--  
+			<a href="#">Link</a>
+			<a href="#">Link</a>
+			<a href="#">Link</a>
+			-->
+        </div>
+        <div class="description">
+        	<p>A simple web app that connects to an org, retrieves metadata and creates a package.xml file.</p>
+        </div>
+        <div class="row">
+            <div class="column">
+                <h2>Authorization</h2>
+
+                <form>
+                    <label for="orgId">Organization Id:</label><br />
+                    <input type="text" id="orgId" name="orgId" required ><br /><br />
+                    <label for="baseUrl">Salesforce base URL:</label><br />
+                    <input type="url" id="baseUrl" name="baseUrl" onfocusout="getApiVersions()" required ><br /><br />
+                    <label for="sessionId">Session Id:</label><br />
+                    <input type="text" id="sessionId" name="sessionId" required ><br /><br />
+                    <div id="showApiVersion"></div>
+                    <br /><br />
+                    <input type="button" value="Submit" onclick="connect()" /><input type="reset" />
+                </form>
+
+                <br />
+                <div>
+                    How to get the authorization information?
+                    <button onclick="showApex()">Show code</button>
+                </div>
+                <div id="apexCode" style="display: none;">
+                    <p>Execute anonymous apex code:</p>
+                    <div>
+                        <code>System.debug('OrgId: '+UserInfo.getOrganizationId());</code><br />
+                        <code>System.debug('BaseUrl: '+URL.getSalesforceBaseUrl().toExternalForm()+'/');</code><br />
+                        <code>System.debug('SessionId: '+(UserInfo.getSessionId()).substring(1));</code>
+                    </div>
+                    <br />
+                    <input
+                        type="text"
+                        value="System.debug('OrgId: '+UserInfo.getOrganizationId());System.debug('BaseUrl: '+URL.getSalesforceBaseUrl().toExternalForm()+'/');System.debug('SessionId: '+(UserInfo.getSessionId()).substring(1));"
+                        id="myInput"
+                    />
+                    <button onclick="copyToClipboard()">Copy to clipboard</button>
+                </div>
+            </div>
+
+            <div class="column">
+                <h2>Metadata</h2>
+                <div id="showTypes"></div>
+                <br />
+                <div id="showObjects"></div>
+                <br />
+                <div id="showItems"></div>
+            </div>
+
+            <div class="column">
+                <h2>Package</h2>
+                <p>Click on the arrow(s) to open or close the tree branches.</p>
+
+                <div id="packageTreeId"></div>
+            </div>
+            
+        </div>
+		<footer>
+            <p>
+                Author: Lubomyr Voloschak, last modified <span id="lastModified"></span><br />
+                <a href="mailto:lubomyr.voloschak@gmail.com">lubomyr.voloschak@gmail.com</a><br />
+                <a href="https://github.com/lubomyrV/sfMetadataTool/">Source code</a><br />
+            </p>
+        </footer>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-git.min.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
+        <script>
+	        $(document).ready(function () {
+		  		document.getElementById("lastModified").innerHTML = new Date(document.lastModified).toDateString();
+	        });
+		</script>
+    </body>
 </html>
