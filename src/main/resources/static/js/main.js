@@ -5,7 +5,7 @@ $(document).ready(function () {
 
 function getApiVersions(){
   	let data = {}
-    data["baseUrl"] = $("#baseUrl").val();
+    data["baseUrl"] = ($("#baseUrl").val()).replace(/\s/g, "");
     //console.log("getApiVersions: "+JSON.stringify(data));
   	$.ajax({
     	type : "POST",
@@ -43,7 +43,7 @@ function getApiVersions(){
 function connect(){
 	$("#showTypes").empty();
 
-	if ($("#orgId").val() == "" || $("#baseUrl").val() == "" || $("#sessionId").val() == ""){
+	if ($("#orgId").val().replace(/\s/g, "") == "" || $("#baseUrl").val().replace(/\s/g, "") == "" || $("#sessionId").val().replace(/\s/g, "") == ""){
 		$('<p>Please, provide credentials.</p>').appendTo("#showTypes");
 		return null;	
 	}
@@ -51,9 +51,9 @@ function connect(){
 	$('<p>Connecting...</p>').appendTo("#showTypes");
 
     let data = {}
-    data["orgId"] = $("#orgId").val();
-    data["baseUrl"] = $("#baseUrl").val();
-    data["sessionId"] = $("#sessionId").val();
+    data["orgId"] = $("#orgId").val().replace(/\s/g, "");
+    data["baseUrl"] = $("#baseUrl").val().replace(/\s/g, "");
+    data["sessionId"] = $("#sessionId").val().replace(/\s/g, "");
     data["apiVersion"] = $("#apiVersion").val();
     //console.log("connect="+JSON.stringify(data));
 
@@ -98,9 +98,9 @@ function connect(){
 function selectedType(){
 	
 	let data = {}
-    data["orgId"] = $("#orgId").val();
-    data["baseUrl"] = $("#baseUrl").val();
-    data["sessionId"] = $("#sessionId").val();
+    data["orgId"] = $("#orgId").val().replace(/\s/g, "");
+    data["baseUrl"] = $("#baseUrl").val().replace(/\s/g, "");
+    data["sessionId"] = $("#sessionId").val().replace(/\s/g, "");
     data["apiVersion"] = $("#apiVersion").val();
 	let metadataType = $("#typeName").val();
 	if (metadataType === "CustomField" || metadataType === "RecordType"){
@@ -143,9 +143,9 @@ function selectedType(){
 
 function getQueuedResult(queuedId){
 	let data = {}
-	data["orgId"] = $("#orgId").val();
-    data["baseUrl"] = $("#baseUrl").val();
-    data["sessionId"] = $("#sessionId").val();
+	data["orgId"] = $("#orgId").val().replace(/\s/g, "");
+    data["baseUrl"] = $("#baseUrl").val().replace(/\s/g, "");
+    data["sessionId"] = $("#sessionId").val().replace(/\s/g, "");
     data["apiVersion"] = $("#apiVersion").val();
 	let metadataType = $("#typeName").val();
 
@@ -298,9 +298,9 @@ function createTable(oldSelectedList, componentNames){
 function selectedObject(){
 	$("#showItems").empty();
 	let data = {}
-    data["orgId"] = $("#orgId").val();
-    data["baseUrl"] = $("#baseUrl").val();
-    data["sessionId"] = $("#sessionId").val();
+    data["orgId"] = $("#orgId").val().replace(/\s/g, "");
+    data["baseUrl"] = $("#baseUrl").val().replace(/\s/g, "");
+    data["sessionId"] = $("#sessionId").val().replace(/\s/g, "");
     data["apiVersion"] = $("#apiVersion").val();
 	data["objectName"] = $("#objectName").val();
     //console.log("selectedObject="+JSON.stringify(data));
