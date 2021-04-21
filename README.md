@@ -26,4 +26,4 @@ All config files `standardObjects.txt, metadataTypes.txt, retrieveResponse.xml, 
 
 Open `http://localhost:8080/` and fill in credentials to connect to your org.
 
-![example](https://github.com/lubomyrV/sfMetadataTool/blob/master/sfmd2.png)
+![example](https://github.com/lubomyrV/sfMetadataTool/blob/master/sfmd3.png)
