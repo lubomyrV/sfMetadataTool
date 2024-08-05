@@ -176,14 +176,14 @@
                 <div id="apexCode" style="display: none;">
                     <p>Execute anonymous apex code:</p>
                     <div>
-                        <code>System.debug('OrgId: '+UserInfo.getOrganizationId());</code><br />
-                        <code>System.debug('BaseUrl: '+URL.getSalesforceBaseUrl().toExternalForm()+'/');</code><br />
-                        <code>System.debug('SessionId: '+(UserInfo.getSessionId()).substring(1));</code>
+                        <code>System.debug('OrgId: '+ UserInfo.getOrganizationId());</code><br />
+                        <code>System.debug('BaseUrl: '+ Url.getOrgDomainUrl() + '/');</code><br />
+                        <code>System.debug('SessionId: '+ (UserInfo.getSessionId()).substring(1));</code>
                     </div>
                     <br />
                     <input
                         type="text"
-                        value="System.debug('OrgId: '+UserInfo.getOrganizationId());System.debug('BaseUrl: '+URL.getSalesforceBaseUrl().toExternalForm()+'/');System.debug('SessionId: '+(UserInfo.getSessionId()).substring(1));"
+                        value="System.debug('OrgId: '+ UserInfo.getOrganizationId());System.debug('BaseUrl: '+ Url.getOrgDomainUrl() + '/');System.debug('SessionId: '+ (UserInfo.getSessionId()).substring(1));"
                         id="myInput"
                     />
                     <button onclick="copyToClipboard()">Copy to clipboard</button>
