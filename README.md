@@ -4,6 +4,8 @@ A simple web app based on Spring Boot, it connects to an org, retrieves metadata
 
 Here is an article that describes how it works https://medium.com/@lubomyr.voloschak/salesforce-metadata-api-f7aa2fb94f76
 
+Here is a link to the app https://convenient-hendrika-sol-185-febc3e53.koyeb.app/
+
 In order to compile this app - the following tools are needed:
 
 1) JRE,JDK v.8
