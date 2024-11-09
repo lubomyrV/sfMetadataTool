@@ -6,17 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class MainController {
-	
-	
-	@GetMapping(value={"/"})
+
+	@GetMapping(value = { "/" })
 	public String indexpage() {
 		return "index";
 	}
-	
+
 	@GetMapping("/metadataTypes")
-    public String metadataTypes (String allTypes, Model model) {
-        model.addAttribute("allTypes", allTypes);
-        return "metadataTypes";
-    }
+	public String metadataTypes(String allTypes, Model model) {
+		model.addAttribute("allTypes", allTypes);
+		return "metadataTypes";
+	}
 
 }
