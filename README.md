@@ -20,7 +20,7 @@ To assembly via command line, type:
 
 In order to run the app, go to the `target/` folder and type
 
-`$ java -jar demo-0.0.1-SNAPSHOT.jar`
+`$ java -jar ./target/demo-0.0.1-SNAPSHOT.jar`
 
 All config files `standardObjects.txt, metadataTypes.txt, retrieveResponse.xml, retrieveRequest.xml, readMetadata.xml, describeSObjects.xml  and describeMetadata.xml` should be in the same folder as the demo-0.0.1-SNAPSHOT.jar file.
 
