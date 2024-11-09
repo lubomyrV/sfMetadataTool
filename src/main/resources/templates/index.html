@@ -167,12 +167,18 @@
             <h2>Authorization</h2>
 
             <form>
-                <label for="orgId">Organization Id:</label><br />
-                <input type="text" id="orgId" name="orgId" required><br /><br />
-                <label for="baseUrl">Salesforce base URL:</label><br />
-                <input type="url" id="baseUrl" name="baseUrl" required><br /><br />
-                <label for="sessionId">Session Id:</label><br />
-                <input type="text" id="sessionId" name="sessionId" required><br /><br />
+                <label for="orgId">Organization Id:</label>
+                <br />
+                <input type="text" id="orgId" name="orgId" required />
+                <br /><br />
+                <label for="baseUrl">Salesforce base URL:</label>
+                <br />
+                <input type="url" id="baseUrl" name="baseUrl" onfocusout="getApiVersions()" required />
+                <br /><br />
+                <label for="sessionId">Session Id:</label>
+                <br />
+                <input type="text" id="sessionId" name="sessionId" required />
+                <br /><br />
                 <div id="showApiVersion"></div>
                 <br /><br />
                 <input class="button" type="button" value="Submit" onclick="connect()" /><input class="button"

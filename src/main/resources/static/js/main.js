@@ -1,10 +1,14 @@
 $(document).ready(function () {
-	getApiVersions();
+	// getApiVersions();
 });
 
 function getApiVersions() {
 	let data = {}
-	data["baseUrl"] = ($("#baseUrl").val()).replace(/\s/g, "");
+	let baseUrl = ($("#baseUrl").val()).replace(/\s/g, "");
+	if (!baseUrl) {
+		return;
+	}
+	data["baseUrl"] = baseUrl;
 	$.ajax({
 		type: "POST",
 		contentType: "application/json",
