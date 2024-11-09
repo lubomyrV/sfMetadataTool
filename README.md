@@ -4,6 +4,8 @@ A simple web app based on Spring Boot, it connects to an org, retrieves metadata
 
 Here is an article that describes how it works https://medium.com/@lubomyr.voloschak/salesforce-metadata-api-f7aa2fb94f76
 
+Here is a link to the app https://convenient-hendrika-sol-185-febc3e53.koyeb.app/
+
 In order to compile this app - the following tools are needed:
 
 1) JRE,JDK v.8
@@ -20,7 +22,7 @@ To assembly via command line, type:
 
 In order to run the app, go to the `target/` folder and type
 
-`$ java -jar demo-0.0.1-SNAPSHOT.jar`
+`$ java -jar ./target/demo-0.0.1-SNAPSHOT.jar`
 
 All config files `standardObjects.txt, metadataTypes.txt, retrieveResponse.xml, retrieveRequest.xml, readMetadata.xml, describeSObjects.xml  and describeMetadata.xml` should be in the same folder as the demo-0.0.1-SNAPSHOT.jar file.
 
